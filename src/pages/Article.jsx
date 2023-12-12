@@ -1,28 +1,57 @@
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+
 function ArticlePage() {
+  const [data, setData] = useState();
+  const param = useParams();
+  useEffect(() => {
+    async function articleData() {
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${param.slug}`
+      );
+      const res = await response.json();
+      setData(res.article);
+    }
+
+    articleData();
+  }, []);
+  console.log(data, 'data');
+  console.log(param, 'param hook');
+  if (!data) {
+    return (
+      <div>
+        <h1></h1>
+      </div>
+    );
+  }
   return (
     <div class="article-page">
       <div class="banner">
         <div class="container">
-          <h1>How to build webapps that scale</h1>
+          <h1>{data.title}</h1>
 
           <div class="article-meta">
             <a href="/profile/eric-simons">
-              <img src="http://i.imgur.com/Qr71crq.jpg" />
+              <img src={data.author.image} />
             </a>
             <div class="info">
               <a href="/profile/eric-simons" class="author">
-                Eric Simons
+                {data.author.username}
               </a>
-              <span class="date">January 20th</span>
+              <span class="date">
+                {new Date(data.createdAt).toDateString()}
+              </span>
             </div>
             <button class="btn btn-sm btn-outline-secondary">
               <i class="ion-plus-round"></i>
-              &nbsp; Follow Eric Simons <span class="counter">(10)</span>
+              &nbsp; Follow {data.author.username}{' '}
+              {/* <span class="counter">(10)</span> */}
             </button>
             &nbsp;&nbsp;
             <button class="btn btn-sm btn-outline-primary">
               <i class="ion-heart"></i>
-              &nbsp; Favorite Post <span class="counter">(29)</span>
+              &nbsp; Favorite Post{' '}
+              <span class="counter">({data.favoritesCount})</span>
             </button>
             <button class="btn btn-sm btn-outline-secondary">
               <i class="ion-edit"></i> Edit Article
@@ -37,15 +66,13 @@ function ArticlePage() {
       <div class="container page">
         <div class="row article-content">
           <div class="col-md-12">
-            <p>
-              Web development technologies have evolved at an incredible clip
-              over the past few years.
-            </p>
+            <p>{data.description}</p>
             <h2 id="introducing-ionic">Introducing RealWorld.</h2>
-            <p>It's a great solution for learning how other frameworks work.</p>
+            <p>{data.body}</p>
             <ul class="tag-list">
-              <li class="tag-default tag-pill tag-outline">realworld</li>
-              <li class="tag-default tag-pill tag-outline">implementations</li>
+              {data.tagList.map((tag) => {
+                return <li class="tag-default tag-pill tag-outline">{tag}</li>;
+              })}
             </ul>
           </div>
         </div>
@@ -55,11 +82,11 @@ function ArticlePage() {
         <div class="article-actions">
           <div class="article-meta">
             <a href="profile.html">
-              <img src="http://i.imgur.com/Qr71crq.jpg" />
+              <img src={data.author.image} />
             </a>
             <div class="info">
               <a href="" class="author">
-                Eric Simons
+                {data.author.username}
               </a>
               <span class="date">January 20th</span>
             </div>
@@ -70,7 +97,8 @@ function ArticlePage() {
             &nbsp;
             <button class="btn btn-sm btn-outline-primary">
               <i class="ion-heart"></i>
-              &nbsp; Favorite Article <span class="counter">(29)</span>
+              &nbsp; Favorite Article{' '}
+              <span class="counter">({data.favoritesCount})</span>
             </button>
             <button class="btn btn-sm btn-outline-secondary">
               <i class="ion-edit"></i> Edit Article

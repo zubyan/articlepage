@@ -1,4 +1,19 @@
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
 function HomePage() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    async function articleData() {
+      const response = await fetch('https://api.realworld.io/api/articles');
+      const res = await response.json();
+      setData(res.articles);
+      // console.log(res);
+    }
+
+    articleData();
+  }, []);
   return (
     <div class="home-page">
       <div class="banner">
@@ -26,6 +41,42 @@ function HomePage() {
               </ul>
             </div>
 
+            {data.map((dataObj, index) => {
+              return (
+                <div class="article-preview">
+                  <div class="article-meta">
+                    <a href="/profile/eric-simons">
+                      <img src={dataObj.author.image} />
+                    </a>
+                    <div class="info">
+                      <a href="/profile/eric-simons" class="author">
+                        {dataObj.author.username}
+                      </a>
+                      <span class="date">
+                        {new Date(dataObj.createdAt).toDateString()}
+                      </span>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm pull-xs-right">
+                      <i class="ion-heart"></i> {dataObj.favoritesCount}
+                    </button>
+                  </div>
+                  <Link to={`/article/${dataObj.slug}`} class="preview-link">
+                    <h1>{dataObj.title}</h1>
+                    <p>{dataObj.description}</p>
+                    <span>Read more...</span>
+                    <ul class="tag-list">
+                      {dataObj.tagList.map((tag) => {
+                        return (
+                          <li class="tag-default tag-pill tag-outline">
+                            {tag}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </Link>
+                </div>
+              );
+            })}
             <div class="article-preview">
               <div class="article-meta">
                 <a href="/profile/eric-simons">

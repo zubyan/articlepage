@@ -23,7 +23,10 @@ const router = createBrowserRouter([
       { path: '/settings', element: <SettingsPage /> },
       { path: '/editor', element: <CreateArticlePage /> },
       { path: '/profile/eric-simons', element: <ProfilePage /> },
-      { path: '/article', element: <ArticlePage /> },
+      {
+        path: '/article/:slug',
+        element: <ArticlePage />,
+      },
     ],
   },
 ]);

@@ -1,39 +1,53 @@
-import { useState } from 'react';
+import { useContext } from 'react';
+import { AuthContext } from '../store/auth-context';
+import { Link } from 'react-router-dom';
 
 function Header() {
-  const isLoggedIn = true;
+  const { user, setUser } = useContext(AuthContext);
+  const isLoggedIn = !!user;
 
+  //   console.log(isLoggedIn, user);
+  function logout() {
+    localStorage.removeItem('user-info');
+    setUser(null);
+  }
   if (isLoggedIn) {
     return (
       <nav class="navbar navbar-light">
         <div class="container">
-          <a class="navbar-brand" href="/">
+          <Link class="navbar-brand" to="/">
             conduit
-          </a>
+          </Link>
           <ul class="nav navbar-nav pull-xs-right">
             <li class="nav-item">
               {/* <!-- Add "active" class when you're on that page" --> */}
-              <a class="nav-link active" href="/">
+              <Link class="nav-link active" to="/">
                 Home
-              </a>
+              </Link>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/editor">
+              <Link class="nav-link" to="/editor">
                 {' '}
                 <i class="ion-compose"></i>&nbsp;New Article{' '}
-              </a>
+              </Link>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/settings">
+              <Link class="nav-link" to="/settings">
                 {' '}
                 <i class="ion-gear-a"></i>&nbsp;Settings{' '}
-              </a>
+              </Link>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/profile/eric-simons">
+              <button class="nav-link" onClick={logout}>
+                {' '}
+                <i class="ion-gear-a"></i>&nbsp;Logout{' '}
+              </button>
+            </li>
+            <li class="nav-item">
+              <Link class="nav-link" to="/profile/eric-simons">
                 <img src="" class="user-pic" />
-                Eric Simons
-              </a>
+                {user.username}
+              </Link>
             </li>
           </ul>
         </div>
@@ -43,25 +57,25 @@ function Header() {
     return (
       <nav className="navbar navbar-light">
         <div className="container">
-          <a className="navbar-brand" href="/">
+          <Link className="navbar-brand" to="/">
             conduit
-          </a>
+          </Link>
           <ul className="nav navbar-nav pull-xs-right">
             <li className="nav-item">
               {/* <!-- Add "active" class when you're on that page" --> */}
-              <a className="nav-link active" href="/">
+              <Link className="nav-link active" to="/">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/login">
+              <Link className="nav-link" to="/login">
                 Sign in
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/register">
+              <Link className="nav-link" to="/register">
                 Sign up
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
