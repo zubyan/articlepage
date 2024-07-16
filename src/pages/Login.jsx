@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../store/auth-context';
+import axios from 'axios';
 
 function LoginPage() {
   const [email, setEmail] = useState('zuby123@gmail.com');
@@ -12,21 +13,38 @@ function LoginPage() {
     let user = { email, password };
     console.log(user);
 
-    let response = await fetch('https://api.realworld.io/api/users/login', {
-      method: 'POST',
-      body: JSON.stringify({ user }),
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
+    // let response = await fetch('https://api.realworld.io/api/users/login', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ user }),
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Accept: 'application/json',
+    //   },
+    // });
+
+    axios
+      .post('https://api.realworld.io/api/users/login', {
+        user,
+      })
+      .then(
+        (response) => {
+          console.log(response);
+          if (response.status === 200) {
+            localStorage.setItem('user-info', JSON.stringify(response));
+            setUser(response);
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
 
     // console.log(result);
-    if (response.status === 200) {
-      let result = await response.json();
-      localStorage.setItem('user-info', JSON.stringify(result));
-      setUser(result);
-    }
+    // if (response.status === 200) {
+    //   let result = await response.json();
+    //   localStorage.setItem('user-info', JSON.stringify(result));
+    //   setUser(result);
+    // }
   }
   if (user) {
     return <Navigate to={'/'} />;

@@ -1,19 +1,64 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
+import { articleData } from '../util/http';
 
 function HomePage() {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
 
-  useEffect(() => {
-    async function articleData() {
-      const response = await fetch('https://api.realworld.io/api/articles');
-      const res = await response.json();
-      setData(res.articles);
-      // console.log(res);
-    }
+  // useEffect(() => {
+  //   async function articleData() {
+  //     const response = await fetch('https://api.realworld.io/api/articles');
+  //     const res = await response.json();
+  //     setData(res.articles);
+  //     // console.log(res);
+  //   }
 
-    articleData();
-  }, []);
+  //   articleData();
+  // }, []);
+
+  const { data } = useQuery({
+    queryKey: ['articles'],
+    queryFn: articleData,
+  });
+
+  let content;
+
+  if (data) {
+    content = data.map((dataObj, index) => {
+      return (
+        <div class="article-preview">
+          <div class="article-meta">
+            <a href="/profile/eric-simons">
+              <img src={dataObj.author.image} />
+            </a>
+            <div class="info">
+              <a href="/profile/eric-simons" class="author">
+                {dataObj.author.username}
+              </a>
+              <span class="date">
+                {new Date(dataObj.createdAt).toDateString()}
+              </span>
+            </div>
+            <button class="btn btn-outline-primary btn-sm pull-xs-right">
+              <i class="ion-heart"></i> {dataObj.favoritesCount}
+            </button>
+          </div>
+          <Link to={`/article/${dataObj.slug}`} class="preview-link">
+            <h1>{dataObj.title}</h1>
+            <p>{dataObj.description}</p>
+            <span>Read more...</span>
+            <ul class="tag-list">
+              {dataObj.tagList.map((tag) => {
+                return <li class="tag-default tag-pill tag-outline">{tag}</li>;
+              })}
+            </ul>
+          </Link>
+        </div>
+      );
+    });
+  }
+
   return (
     <div class="home-page">
       <div class="banner">
@@ -40,43 +85,7 @@ function HomePage() {
                 </li>
               </ul>
             </div>
-
-            {data.map((dataObj, index) => {
-              return (
-                <div class="article-preview">
-                  <div class="article-meta">
-                    <a href="/profile/eric-simons">
-                      <img src={dataObj.author.image} />
-                    </a>
-                    <div class="info">
-                      <a href="/profile/eric-simons" class="author">
-                        {dataObj.author.username}
-                      </a>
-                      <span class="date">
-                        {new Date(dataObj.createdAt).toDateString()}
-                      </span>
-                    </div>
-                    <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                      <i class="ion-heart"></i> {dataObj.favoritesCount}
-                    </button>
-                  </div>
-                  <Link to={`/article/${dataObj.slug}`} class="preview-link">
-                    <h1>{dataObj.title}</h1>
-                    <p>{dataObj.description}</p>
-                    <span>Read more...</span>
-                    <ul class="tag-list">
-                      {dataObj.tagList.map((tag) => {
-                        return (
-                          <li class="tag-default tag-pill tag-outline">
-                            {tag}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </Link>
-                </div>
-              );
-            })}
+            {content}
             <div class="article-preview">
               <div class="article-meta">
                 <a href="/profile/eric-simons">
